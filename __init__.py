@@ -1,5 +1,3 @@
-# Copyright (c) 2015 Daniel Davison <davisondanielj@gmail.com>
-#
 # This file is part of Dyson
 #
 # Dyson is free software: you can redistribute it and/or modify
