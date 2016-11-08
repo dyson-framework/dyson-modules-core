@@ -10,23 +10,32 @@ class ValidateModule(DysonModule):
         :param params:
             allowed validations:
                 - title
+                    - is
+                    - is_not
                 - present
                 - not_present
-                - text_is
-                - text_is_not
+                - text_of
+                    - is
+                    - is_not
+                - value_of
+                    - is
+                    - is_not
         :return:
         """
-
         if params:
             if 'title' in params:
                 """
-                Validate the title of the page
+                Validate the title_shouldbe of the page
                 """
                 actual_title = webdriver.title
-                try:
-                    assert params['title'] == actual_title
-                except AssertionError:
-                    self.fail("Title is not \"%s\". Actual: \"%s\"" % (params['title'], actual_title))
+                title_shouldbe = params['title']
+                if 'is' in title_shouldbe:
+                    if actual_title != title_shouldbe:
+                        self.fail("Title is not \"%s\". Actual: \"%s\"" % (title_shouldbe, actual_title))
+
+                elif 'is_not' in title_shouldbe:
+                    if actual_title == title_shouldbe:
+                        self.fail("Title is \"%s\" when it shouldn't be" % title_shouldbe)
 
             if 'present' in params:
                 """
@@ -42,35 +51,51 @@ class ValidateModule(DysonModule):
 
             if 'text_of' in params:
                 """
-                Validate text of an element
+                Validate text (or innerText) of an element
                 """
-                if 'element' in params['text_of']:
-                    self._validate_present(params['text_of']['element'], webdriver)
+                text_of = params['text_of']
+                if 'element' in text_of:
+                    self._validate_present(text_of['element'], webdriver)
                 else:
                     self.fail("Key \"element\" is required")
 
-                if 'is' in params['text_of']:
-                    strategy, selector = translate_selector(params['text_of']['element'], webdriver)
+                if 'is' in text_of:
+                    strategy, selector = translate_selector(text_of['element'], webdriver)
                     actual_text = strategy(selector).text
-                    if actual_text != params['text_of']['is']:
+                    if actual_text != text_of['is']:
                         self.fail("Text of %s is not \"%s\".  Actual: \"%s\"" %
-                                  (params['text_of']['element'], params['text_of']['is'], actual_text))
+                                  (text_of['element'], text_of['is'], actual_text))
+                elif 'is_not' in text_of:
+                    strategy, selector = translate_selector(text_of['element'], webdriver)
+                    actual_text = strategy(selector).text
+                    if actual_text == text_of['is_not']:
+                        self.fail("Text of %s is \"%s\" when it shouldn't be" % (
+                            text_of['element'], text_of['is_not']
+                        ))
 
             if 'value_of' in params:
                 """
-                Validate value of an element
+                Validate value attribute of an element
                 """
-                if 'element' in params['value_of']:
-                    self._validate_present(params['value_of']['element'], webdriver)
+                value_of = params['value_of']
+                if 'element' in value_of:
+                    self._validate_present(value_of['element'], webdriver)
                 else:
                     self.fail("Key \"element\" is required")
 
-                if 'is' in params['value_of']:
-                    strategy, selector = translate_selector(params['value_of']['element'], webdriver)
+                if 'is' in value_of:
+                    strategy, selector = translate_selector(value_of['element'], webdriver)
                     actual_value = strategy(selector).get_attribute('value')
-                    if actual_value != params['value_of']['is']:
+                    if actual_value != value_of['is']:
                         self.fail("Value of %s is not \"%s\". Actual: \"%s\"" % (
-                            params['value_of']['element'], params['value_of']['is'], actual_value
+                            value_of['element'], value_of['is'], actual_value
+                        ))
+                elif 'is_not' in value_of:
+                    strategy, selector = translate_selector(value_of['element'], webdriver)
+                    actual_value = strategy(selector).get_attribute('value')
+                    if actual_value == value_of['is']:
+                        self.fail("Value of %s is \"%s\" when it shouldn't be" % (
+                            value_of['element'], value_of['is']
                         ))
 
     def _validate_present(self, param, webdriver):
