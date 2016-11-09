@@ -2,12 +2,11 @@ from dyson.utils.module import DysonModule
 from dyson.utils.selectors import translate_selector
 
 
-class CheckModule(DysonModule):
+class UncheckModule(DysonModule):
     def run(self, webdriver, params):
         """
-        Check an element on the page.
-        Usually only applies to radio and
-        checkbox's
+        Unchecks an element on the page.
+        ONLY applies to checkbox's
         :param webdriver:
         :param params:
         :return:
@@ -18,9 +17,9 @@ class CheckModule(DysonModule):
             if selector and strategy:
                 element = selector(strategy)
 
-                if not element.is_selected():
+                if element.is_selected():
                     selector(strategy).click()
             else:
-                self.fail("You need to specify a valid selector to check")
+                self.fail("You need to specify a valid selector to uncheck")
         else:
-            self.fail("You need to specify an argument to \"check\"")
+            self.fail("You need to specify an argument to \"uncheck\"")

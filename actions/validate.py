@@ -20,6 +20,8 @@ class ValidateModule(DysonModule):
                 - value_of
                     - is
                     - is_not
+                - is_checked
+                - is_unchecked
         :return:
         """
         if params:
@@ -41,22 +43,30 @@ class ValidateModule(DysonModule):
                 """
                 Validate the presence of an element
                 """
-                self._validate_present(params['present'], webdriver)
+                strategy, selector = translate_selector(params['present'], webdriver)
+                try:
+                    assert strategy(selector) is not None
+                except:
+                    self.fail("Element with selector \"%s\" is not present" % params['present'])
 
             if 'not_present' in params:
                 """
                 Validate the absence of an element
                 """
-                self._validate_not_present(params['not_present'], webdriver)
+                strategy, selector = translate_selector(params['not_present'], webdriver)
+                try:
+                    strategy(selector)
+                    self.fail("Element with selector \"%s\" is present" % params['not_present'])
+                except:
+                    # pass
+                    pass
 
             if 'text_of' in params:
                 """
                 Validate text (or innerText) of an element
                 """
                 text_of = params['text_of']
-                if 'element' in text_of:
-                    self._validate_present(text_of['element'], webdriver)
-                else:
+                if 'element' not in text_of:
                     self.fail("Key \"element\" is required")
 
                 if 'is' in text_of:
@@ -78,9 +88,7 @@ class ValidateModule(DysonModule):
                 Validate value attribute of an element
                 """
                 value_of = params['value_of']
-                if 'element' in value_of:
-                    self._validate_present(value_of['element'], webdriver)
-                else:
+                if 'element' not in value_of:
                     self.fail("Key \"element\" is required")
 
                 if 'is' in value_of:
@@ -98,30 +106,22 @@ class ValidateModule(DysonModule):
                             value_of['element'], value_of['is']
                         ))
 
-    def _validate_present(self, param, webdriver):
-        """
-        Helper method.  Validate present
-        :param param:
-        :param webdriver:
-        :return:
-        """
-        strategy, selector = translate_selector(param, webdriver)
-        try:
-            assert strategy(selector) is not None
-        except:
-            self.fail("Element with selector \"%s\" is not present" % param)
+            if 'is_checked' in params:
+                """
+                Validate that a checkbox / radio button is checked
+                """
+                element = params['is_checked']
+                strategy, selector = translate_selector(element, webdriver)
 
-    def _validate_not_present(self, param, webdriver):
-        """
-        Helper method.  Validate not present
-        :param param:
-        :param webdriver:
-        :return:
-        """
-        strategy, selector = translate_selector(param, webdriver)
-        try:
-            strategy(selector)
-            self.fail("Element with selector \"%s\" is present" % param)
-        except:
-            # pass
-            pass
+                if not strategy(selector).is_selected():
+                    self.fail("Element %s is not checked" % element)
+
+            if 'is_not_checked' in params:
+                """
+                Validate that a checkbox / radio button is unchecked
+                """
+                element = params['is_not_checked']
+                strategy, selector = translate_selector(element, webdriver)
+
+                if strategy(selector).is_selected():
+                    self.fail("Element %s is checked" % element)
