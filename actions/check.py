@@ -19,7 +19,7 @@ class CheckModule(DysonModule):
                 element = selector(strategy)
 
                 if not element.is_selected():
-                    selector(strategy).click()
+                    return selector(strategy).click()
             else:
                 self.fail("You need to specify a valid selector to check")
         else:

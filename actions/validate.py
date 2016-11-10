@@ -1,3 +1,5 @@
+from six import string_types
+
 from dyson.utils.module import DysonModule
 from dyson.utils.selectors import translate_selector
 
@@ -24,7 +26,7 @@ class ValidateModule(DysonModule):
                 - is_unchecked
         :return:
         """
-        if params:
+        if params and isinstance(params, dict):
             if 'title' in params:
                 """
                 Validate the title_shouldbe of the page
@@ -45,7 +47,7 @@ class ValidateModule(DysonModule):
                 """
                 strategy, selector = translate_selector(params['present'], webdriver)
                 try:
-                    assert strategy(selector) is not None
+                    return strategy(selector)
                 except:
                     self.fail("Element with selector \"%s\" is not present" % params['present'])
 
@@ -53,13 +55,14 @@ class ValidateModule(DysonModule):
                 """
                 Validate the absence of an element
                 """
+                element = None
                 strategy, selector = translate_selector(params['not_present'], webdriver)
                 try:
-                    strategy(selector)
+                    element = strategy(selector)
                     self.fail("Element with selector \"%s\" is present" % params['not_present'])
                 except:
                     # pass
-                    pass
+                    return element
 
             if 'text_of' in params:
                 """
@@ -75,6 +78,8 @@ class ValidateModule(DysonModule):
                     if actual_text != text_of['is']:
                         self.fail("Text of %s is not \"%s\".  Actual: \"%s\"" %
                                   (text_of['element'], text_of['is'], actual_text))
+                    else:
+                        return actual_text
                 elif 'is_not' in text_of:
                     strategy, selector = translate_selector(text_of['element'], webdriver)
                     actual_text = strategy(selector).text
@@ -82,6 +87,8 @@ class ValidateModule(DysonModule):
                         self.fail("Text of %s is \"%s\" when it shouldn't be" % (
                             text_of['element'], text_of['is_not']
                         ))
+                    else:
+                        return actual_text
 
             if 'value_of' in params:
                 """
@@ -98,6 +105,8 @@ class ValidateModule(DysonModule):
                         self.fail("Value of %s is not \"%s\". Actual: \"%s\"" % (
                             value_of['element'], value_of['is'], actual_value
                         ))
+                    else:
+                        return actual_value
                 elif 'is_not' in value_of:
                     strategy, selector = translate_selector(value_of['element'], webdriver)
                     actual_value = strategy(selector).get_attribute('value')
@@ -105,6 +114,8 @@ class ValidateModule(DysonModule):
                         self.fail("Value of %s is \"%s\" when it shouldn't be" % (
                             value_of['element'], value_of['is']
                         ))
+                    else:
+                        return actual_value
 
             if 'is_checked' in params:
                 """
@@ -112,9 +123,11 @@ class ValidateModule(DysonModule):
                 """
                 element = params['is_checked']
                 strategy, selector = translate_selector(element, webdriver)
-
-                if not strategy(selector).is_selected():
+                status = strategy(selector).is_selected()
+                if not status:
                     self.fail("Element %s is not checked" % element)
+                else:
+                    return status
 
             if 'is_not_checked' in params:
                 """
@@ -123,5 +136,11 @@ class ValidateModule(DysonModule):
                 element = params['is_not_checked']
                 strategy, selector = translate_selector(element, webdriver)
 
-                if strategy(selector).is_selected():
+                status = strategy(selector).is_selected()
+                if status:
                     self.fail("Element %s is checked" % element)
+                else:
+                    return status
+
+        elif isinstance(params, string_types):
+            return eval(params)

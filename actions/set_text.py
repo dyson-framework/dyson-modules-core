@@ -10,14 +10,9 @@ class SetTextModule(DysonModule):
         :param params:
         :return:
         """
-        if 'of' in params:
-            if 'to' in params:
-                strategy, selector = translate_selector(params['of'], webdriver=webdriver)
-                strategy(selector).send_keys(params['to'])
-
-                actual_value = strategy(selector).get_attribute('value')
-
-                if actual_value != params['to']:
-                    self.fail("Text of %s failed to set to \"%s\".  Actual value: \"%s\"" %
-                              (params['of'], params['to'], actual_value))
+        if 'of' in params and 'to' in params:
+            strategy, selector = translate_selector(params['of'], webdriver=webdriver)
+            return strategy(selector).send_keys(params['to'])
+        else:
+            self.fail("Keys \"of\" and \"to\" are required")
 

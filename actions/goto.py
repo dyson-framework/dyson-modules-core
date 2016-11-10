@@ -3,7 +3,10 @@ from dyson.utils.module import DysonModule
 
 class GotoModule(DysonModule):
     def run(self, webdriver, params):
-        if params['url']:
-            webdriver.get(params['url'])
+        if isinstance(params, dict):
+            if params['url']:
+                return webdriver.get(params['url'])
+            else:
+                self.fail("You need to specify a valid URL to go to")
         else:
-            self.fail("You need to specify a valid URL to go to")
+            self.fail("Key \"url\" is required")

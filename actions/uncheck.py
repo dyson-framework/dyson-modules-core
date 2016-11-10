@@ -18,7 +18,7 @@ class UncheckModule(DysonModule):
                 element = selector(strategy)
 
                 if element.is_selected():
-                    selector(strategy).click()
+                    return selector(strategy).click()
             else:
                 self.fail("You need to specify a valid selector to uncheck")
         else:

@@ -14,7 +14,7 @@ class ClickModule(DysonModule):
             selector, strategy = translate_selector(params, webdriver)
 
             if selector and strategy:
-                selector(strategy).click()
+                return selector(strategy).click()
             else:
                 self.fail("You need to specify a valid selector to click")
         else:
