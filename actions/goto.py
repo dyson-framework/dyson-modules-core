@@ -1,3 +1,4 @@
+from dyson.errors import DysonError
 from dyson.utils.module import DysonModule
 
 
@@ -7,6 +8,6 @@ class GotoModule(DysonModule):
             if params['url']:
                 return webdriver.get(params['url'])
             else:
-                self.fail("You need to specify a valid URL to go to")
+                raise DysonError("You need to specify a valid URL to go to")
         else:
-            self.fail("Key \"url\" is required")
+            raise DysonError("Key \"url\" is required")

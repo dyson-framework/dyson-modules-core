@@ -1,3 +1,4 @@
+from dyson.errors import DysonError
 from dyson.utils.module import DysonModule
 from dyson.utils.selectors import translate_selector
 
@@ -14,5 +15,5 @@ class SetTextModule(DysonModule):
             strategy, selector = translate_selector(params['of'], webdriver=webdriver)
             return strategy(selector).send_keys(params['to'])
         else:
-            self.fail("Keys \"of\" and \"to\" are required")
+            raise DysonError("Keys \"of\" and \"to\" are required")
 

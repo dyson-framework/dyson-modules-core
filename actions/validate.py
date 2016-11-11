@@ -1,5 +1,6 @@
 from six import string_types
 
+from dyson.errors import DysonError
 from dyson.utils.module import DysonModule
 from dyson.utils.selectors import translate_selector
 
@@ -46,10 +47,7 @@ class ValidateModule(DysonModule):
                 Validate the presence of an element
                 """
                 strategy, selector = translate_selector(params['present'], webdriver)
-                try:
-                    return strategy(selector)
-                except:
-                    self.fail("Element with selector \"%s\" is not present" % params['present'])
+                return strategy(selector)
 
             if 'not_present' in params:
                 """
@@ -57,12 +55,7 @@ class ValidateModule(DysonModule):
                 """
                 element = None
                 strategy, selector = translate_selector(params['not_present'], webdriver)
-                try:
-                    element = strategy(selector)
-                    self.fail("Element with selector \"%s\" is present" % params['not_present'])
-                except:
-                    # pass
-                    return element
+                return strategy(selector)
 
             if 'text_of' in params:
                 """
@@ -70,7 +63,7 @@ class ValidateModule(DysonModule):
                 """
                 text_of = params['text_of']
                 if 'element' not in text_of:
-                    self.fail("Key \"element\" is required")
+                    raise DysonError("Key \"element\" is required")
 
                 if 'is' in text_of:
                     strategy, selector = translate_selector(text_of['element'], webdriver)
@@ -96,7 +89,7 @@ class ValidateModule(DysonModule):
                 """
                 value_of = params['value_of']
                 if 'element' not in value_of:
-                    self.fail("Key \"element\" is required")
+                    raise DysonError("Key \"element\" is required")
 
                 if 'is' in value_of:
                     strategy, selector = translate_selector(value_of['element'], webdriver)

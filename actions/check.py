@@ -1,3 +1,4 @@
+from dyson.errors import DysonError
 from dyson.utils.module import DysonModule
 from dyson.utils.selectors import translate_selector
 
@@ -21,6 +22,6 @@ class CheckModule(DysonModule):
                 if not element.is_selected():
                     return selector(strategy).click()
             else:
-                self.fail("You need to specify a valid selector to check")
+                raise DysonError("You need to specify a valid selector to check")
         else:
-            self.fail("You need to specify an argument to \"check\"")
+            raise DysonError("You need to specify an argument to \"check\"")

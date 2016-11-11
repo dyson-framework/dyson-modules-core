@@ -1,3 +1,4 @@
+from dyson.errors import DysonError
 from dyson.utils.module import DysonModule
 from dyson.utils.selectors import translate_selector
 
@@ -20,6 +21,6 @@ class UncheckModule(DysonModule):
                 if element.is_selected():
                     return selector(strategy).click()
             else:
-                self.fail("You need to specify a valid selector to uncheck")
+                raise DysonError("You need to specify a valid selector to uncheck")
         else:
-            self.fail("You need to specify an argument to \"uncheck\"")
+            raise DysonError("You need to specify an argument to \"uncheck\"")

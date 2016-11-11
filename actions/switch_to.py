@@ -1,5 +1,6 @@
 from six import string_types
 
+from dyson.errors import DysonError
 from dyson.utils.module import DysonModule
 from dyson.utils.selectors import translate_selector
 
@@ -48,7 +49,7 @@ class SwitchToModule(DysonModule):
                         elif 'get_text' is alert_action:
                             return webdriver.switch_to.alert.text
                     else:
-                        self.fail("Invalid action \"%s\". Valid actions are %s" %
+                        raise DysonError("Invalid action \"%s\". Valid actions are %s" %
                                   (alert_action, ','.join(valid_actions)))
                 elif 'username' in params['alert']:
                     username = params['alert']['username']
@@ -61,11 +62,11 @@ class SwitchToModule(DysonModule):
                 else:
                     return webdriver.switch_to.alert()
             else:
-                self.fail("Unsure how to switch to \"%s\". Valid options are %s" % (params, ','.join(self.ACTIONS)))
+                raise DysonError("Unsure how to switch to \"%s\". Valid options are %s" % (params, ','.join(self.ACTIONS)))
 
         elif isinstance(params, string_types):
             if "default_content" == params:
                 return webdriver.switch_to.default_content()
             else:
-                self.fail("Unsure how to switch to \"%s\". Valid options are %s" % (params, ','.join(self.ACTIONS)))
+                raise DysonError("Unsure how to switch to \"%s\". Valid options are %s" % (params, ','.join(self.ACTIONS)))
 

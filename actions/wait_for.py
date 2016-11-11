@@ -42,7 +42,7 @@ class WaitForModule(DysonModule):
                 if 'element' in params['visibility_of']:
                     element = params['visibility_of']['element']
                 else:
-                    return self.fail("Key \"element\" is required")
+                    raise DysonError("Key \"element\" is required")
 
                 timeout = int(constants.DEFAULT_TIMEOUT)  # seconds
 
@@ -58,7 +58,7 @@ class WaitForModule(DysonModule):
                 if 'element' in params['invisibility_of']:
                     element = params['invisibility_of']['element']
                 else:
-                    return self.fail("Key \"element\" is required")
+                    raise DysonError("Key \"element\" is required")
 
                 timeout = int(constants.DEFAULT_TIMEOUT)  # seconds
 
@@ -74,7 +74,7 @@ class WaitForModule(DysonModule):
                 if 'element' in params['presence_of']:
                     element = params['presence_of']['element']
                 else:
-                    return self.fail("Key \"element\" is required")
+                    raise DysonError("Key \"element\" is required")
 
                 timeout = int(constants.DEFAULT_TIMEOUT)  # seconds
 
@@ -274,10 +274,6 @@ class WaitForModule(DysonModule):
         """
         strategy, selector = translate_selector_to_by(element)
 
-        try:
-            return WebDriverWait(webdriver, timeout).until(
-                expected_condition((strategy, selector))
-            )
-        except:
-            return self.fail("%s could not be satisifed for \"%s\" in %s seconds"
-                             % (expected_condition.__name__, element, timeout))
+        return WebDriverWait(webdriver, timeout).until(
+            expected_condition((strategy, selector))
+        )
