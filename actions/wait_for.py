@@ -9,7 +9,22 @@ from dyson.utils.selectors import translate_selector_to_by
 
 
 class WaitForModule(DysonModule):
-    VALID_ACTIONS = frozenset(['visibility_of', 'invisibility_of'])
+    VALID_ACTIONS = frozenset([
+        'visibility_of',
+        'invisibility_of',
+        'presence_of',
+        'title_to_be',
+        'title_to_contain',
+        'alert',
+        'text_to_be_present',
+        'clickable',
+        'value_to_be',
+        'staleness_of',
+        'presence_of_all',
+        'element_to_be_selected',
+        'selection_state_to_be',
+        'frame_and_switch'
+    ])
 
     def run(self, webdriver, params):
         """
