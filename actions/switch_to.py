@@ -6,7 +6,7 @@ from dyson.utils.selectors import translate_selector
 
 
 class SwitchToModule(DysonModule):
-    ACTIONS = frozenset(['frame', 'default_content'])
+    ACTIONS = frozenset(['frame', 'default_content', 'window'])
 
     def run(self, webdriver, params):
         """
@@ -61,6 +61,8 @@ class SwitchToModule(DysonModule):
                     return webdriver.switch_to.alert.authenticate(username, password)
                 else:
                     return webdriver.switch_to.alert()
+            elif 'window' in params:
+                return webdriver.switch_to.window(params['window'])
             else:
                 raise DysonError("Unsure how to switch to \"%s\". Valid options are %s" % (params, ','.join(self.ACTIONS)))
 
