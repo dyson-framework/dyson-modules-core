@@ -1,5 +1,6 @@
 from six import string_types
 
+from dyson.constants import to_boolean
 from dyson.errors import DysonError
 from dyson.utils.module import DysonModule
 from dyson.utils.selectors import translate_selector
@@ -136,4 +137,7 @@ class ValidateModule(DysonModule):
                     return status
 
         elif isinstance(params, string_types):
-            return eval(params)
+            result = eval(params)
+            if not to_boolean(result):
+                self.fail("\"%s\" has a result of False" % params)
+            return result
